@@ -1,0 +1,36 @@
+---
+import Wordmark from '../Wordmark.astro';
+import SunClock from '../SunClock.astro';
+import type { Dict } from '../../i18n';
+
+interface Props {
+  t: Dict;
+}
+const { t } = Astro.props;
+const h = t.hero;
+---
+
+<section class="hero" id="top" data-section aria-labelledby="top-title">
+  <div class="wrap hero__grid">
+    <div>
+      <div class="hero__brand">
+        <Wordmark tag="p" class="hero__wordmark" />
+        <p class="hero__brandline">{t.brandLine}</p>
+      </div>
+      <p class="eyebrow">{h.eyebrow}</p>
+      <h1 class="hero__headline" id="top-title">{h.headline}</h1>
+      <p class="hero__subhead">{h.subhead}</p>
+      <ul class="hero__metrics">
+        {
+          h.metrics.map((m) => (
+            <li class="hero__metric">
+              <span class="hero__metric-value">{m.value}</span>
+              <span class="hero__metric-label">{m.label}</span>
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+    <SunClock t={t} id="sun-hero" variant="hero" />
+  </div>
+</section>

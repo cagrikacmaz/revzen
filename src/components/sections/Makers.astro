@@ -1,0 +1,37 @@
+---
+import SectionHead from '../SectionHead.astro';
+import type { Dict } from '../../i18n';
+
+interface Props {
+  t: Dict;
+}
+const { t } = Astro.props;
+const m = t.makers;
+---
+
+<section class="section" id="makers" data-section data-nav-group="terms" aria-labelledby="makers-title">
+  <div class="wrap">
+    <SectionHead id="makers" num="12" eyebrow={m.eyebrow} headline={m.headline} />
+    <div class="grid grid--3">
+      {
+        m.cards.map((c) => (
+          <article class="card maker">
+            <h3 class="card-title" style="margin-bottom:0.15rem">
+              {c.name}
+            </h3>
+            <p class="maker__city">{c.city}</p>
+            <p class="maker__text">{c.text}</p>
+            <a class="maker__link" href={c.url} target="_blank" rel="noopener">
+              {m.linkLabel}
+              <span aria-hidden="true">↗</span>
+              <span class="visually-hidden">
+                {c.name} {t.ui.opensInNewTab}
+              </span>
+            </a>
+          </article>
+        ))
+      }
+    </div>
+    <p class="note">{m.note}</p>
+  </div>
+</section>

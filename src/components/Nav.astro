@@ -1,0 +1,110 @@
+---
+import Wordmark from './Wordmark.astro';
+import { dicts, otherLang, type Lang } from '../i18n';
+import { url } from '../lib/paths';
+import { whatsappUrl } from '../lib/contact';
+
+interface Props {
+  lang: Lang;
+  deckHref: string | null;
+}
+
+const { lang, deckHref } = Astro.props;
+const t = dicts[lang];
+const other = otherLang(lang);
+const wa = whatsappUrl(t.ui.whatsappMessage);
+---
+
+<nav class="nav" aria-label={t.ui.primaryNav} data-nav>
+  <div class="wrap">
+    <div class="nav__inner">
+      <a class="nav__brand" href="#top" aria-label="Revzen"><Wordmark /></a>
+      <ul class="nav__links">
+        {t.nav.map((n) => <li><a href={`#${n.id}`} data-nav-link={n.id}>{n.label}</a></li>)}
+      </ul>
+      <div class="nav__actions">
+        <a class="nav__action" href={wa} target="_blank" rel="noopener">{t.ui.whatsapp}</a>
+        {deckHref && <a class="nav__action nav__action--deck" href={deckHref} download>{t.ui.downloadDeck}</a>}
+        <div class="lang">
+          <span aria-current="true" lang={lang}>{lang.toUpperCase()}</span>
+          <a href={url(`${other}/`)} hreflang={other} lang={other} aria-label={t.ui.langSwitchLabel} data-lang-switch>
+            {other.toUpperCase()}
+          </a>
+        </div>
+        <button class="nav__toggle" type="button" aria-expanded="false" aria-controls="nav-menu" data-nav-toggle>
+          {t.ui.menu}
+        </button>
+      </div>
+    </div>
+    <div class="nav__menu" id="nav-menu" hidden data-nav-menu>
+      <ul>
+        {t.nav.map((n) => <li><a href={`#${n.id}`}>{n.label}</a></li>)}
+      </ul>
+      <div class="nav__menu-extra">
+        <a href={wa} target="_blank" rel="noopener">{t.ui.whatsapp}</a>
+        {deckHref && <a href={deckHref} download>{t.ui.downloadDeck}</a>}
+      </div>
+    </div>
+  </div>
+</nav>
+
+<script>
+  const nav = document.querySelector<HTMLElement>('[data-nav]');
+  if (nav) {
+    const toggle = nav.querySelector<HTMLButtonElement>('[data-nav-toggle]')!;
+    const menu = nav.querySelector<HTMLElement>('[data-nav-menu]')!;
+    const setOpen = (open: boolean) => {
+      toggle.setAttribute('aria-expanded', String(open));
+      menu.hidden = !open;
+    };
+    toggle.addEventListener('click', () => setOpen(menu.hidden));
+    menu.addEventListener('click', (e) => {
+      if ((e.target as HTMLElement).closest('a')) setOpen(false);
+    });
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && !menu.hidden) {
+        setOpen(false);
+        toggle.focus();
+      }
+    });
+
+    // Keep the reader on the same section when switching language.
+    const sw = nav.querySelector<HTMLAnchorElement>('[data-lang-switch]')!;
+    const baseHref = sw.getAttribute('href')!;
+    const sections = Array.from(document.querySelectorAll<HTMLElement>('main [data-section]'));
+    const links = Array.from(nav.querySelectorAll<HTMLAnchorElement>('[data-nav-link]'));
+
+    const currentSection = () => {
+      const line = window.innerHeight * 0.3;
+      let current: HTMLElement | undefined;
+      for (const s of sections) if (s.getBoundingClientRect().top <= line) current = s;
+      return current;
+    };
+
+    let ticking = false;
+    const update = () => {
+      ticking = false;
+      const cur = currentSection();
+      const id = cur?.id;
+      sw.href = id && id !== 'top' ? `${baseHref}#${id}` : baseHref;
+      const navId = cur?.dataset.navGroup;
+      for (const l of links) {
+        if (l.dataset.navLink === navId) l.setAttribute('aria-current', 'true');
+        else l.removeAttribute('aria-current');
+      }
+    };
+    window.addEventListener(
+      'scroll',
+      () => {
+        if (!ticking) {
+          ticking = true;
+          requestAnimationFrame(update);
+        }
+      },
+      { passive: true },
+    );
+    window.addEventListener('hashchange', update);
+    sw.addEventListener('click', update);
+    update();
+  }
+</script>

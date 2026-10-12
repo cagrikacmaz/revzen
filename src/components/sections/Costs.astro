@@ -1,0 +1,52 @@
+---
+import SectionHead from '../SectionHead.astro';
+import type { Dict } from '../../i18n';
+
+interface Props {
+  t: Dict;
+}
+const { t } = Astro.props;
+const c = t.costs;
+const tables = [
+  { id: 'bridge', title: c.bridgeTitle, rows: c.bridgeRows },
+  { id: 'fixed', title: c.fixedTitle, rows: c.fixedRows },
+];
+---
+
+<section class="section" id="costs" data-section data-nav-group="model" aria-labelledby="costs-title">
+  <div class="wrap">
+    <SectionHead id="costs" num="09" eyebrow={c.eyebrow} headline={c.headline} />
+    <div class="grid grid--2-wide">
+      {
+        tables.map((tb) => (
+          <div class="table-wrap">
+            <table class="table table--cards">
+              <caption>{tb.title}</caption>
+              <thead>
+                <tr>
+                  {c.columns.map((col, i) => (i === 0 ? <td /> : <th scope="col" class="num">{col}</th>))}
+                </tr>
+              </thead>
+              <tbody>
+                {tb.rows.map((r) => (
+                  <tr class:list={{ 'row--total': r.kind === 'total', 'row--subtotal': r.kind === 'subtotal' }}>
+                    <th scope="row">{r.cells[0]}</th>
+                    {r.cells.slice(1).map((cell, i) => (
+                      <td class:list={['num', { 'is-negative': r.kind === 'minus' }]} data-label={c.columns[i + 1]}>
+                        {cell}
+                      </td>
+                    ))}
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        ))
+      }
+    </div>
+    <aside class="callout callout--teal" style="margin-top:clamp(1.25rem,3vw,1.5rem)" aria-labelledby="costs-note-title">
+      <h3 class="callout__title" id="costs-note-title">{c.noteTitle}</h3>
+      <p>{c.noteText}</p>
+    </aside>
+  </div>
+</section>

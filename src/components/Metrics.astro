@@ -1,0 +1,25 @@
+---
+interface Metric {
+  label: string;
+  value: string;
+  note: string;
+}
+interface Props {
+  items: Metric[];
+}
+const { items } = Astro.props;
+---
+
+<dl class="metrics" style="margin:0">
+  {
+    items.map((m, i) => (
+      <div class:list={['metric', { 'metric--accent': i === items.length - 1 }]}>
+        <dt class="metric__label">{m.label}</dt>
+        <dd style="margin:0">
+          <span class="metric__value">{m.value}</span>
+          <span class="metric__note">{m.note}</span>
+        </dd>
+      </div>
+    ))
+  }
+</dl>

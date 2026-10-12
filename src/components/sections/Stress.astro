@@ -1,0 +1,47 @@
+---
+import SectionHead from '../SectionHead.astro';
+import Calculator from '../Calculator.astro';
+import type { Dict, Lang } from '../../i18n';
+
+interface Props {
+  t: Dict;
+  lang: Lang;
+}
+const { t, lang } = Astro.props;
+const s = t.stress;
+---
+
+<section class="section" id="stress" data-section data-nav-group="model" aria-labelledby="stress-title">
+  <div class="wrap">
+    <SectionHead id="stress" num="08" eyebrow={s.eyebrow} headline={s.headline} />
+    <div class="table-wrap">
+      <table class="table table--cards">
+        <caption>{s.tableCaption}</caption>
+        <thead>
+          <tr>
+            {s.columns.map((c, i) => <th scope="col" class:list={{ num: i === 1 || i === 2 }}>{c}</th>)}
+          </tr>
+        </thead>
+        <tbody>
+          {
+            s.rows.map((r) => (
+              <tr class:list={{ 'row--highlight': r.tone === 'base' }}>
+                <th scope="row">{r.cells[0]}</th>
+                <td class:list={['num', { 'is-negative': r.tone === 'negative' }]} data-label={s.columns[1]}>
+                  {r.cells[1]}
+                </td>
+                <td class:list={['num', { 'is-negative': r.tone === 'negative' }]} data-label={s.columns[2]}>
+                  {r.cells[2]}
+                </td>
+                <td class="muted" data-label={s.columns[3]}>
+                  {r.cells[3]}
+                </td>
+              </tr>
+            ))
+          }
+        </tbody>
+      </table>
+    </div>
+    <Calculator lang={lang} />
+  </div>
+</section>

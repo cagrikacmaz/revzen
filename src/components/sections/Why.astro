@@ -1,0 +1,31 @@
+---
+import type { Dict } from '../../i18n';
+
+interface Props {
+  t: Dict;
+}
+const { t } = Astro.props;
+---
+
+<section class="section section--why why" id="why" data-section aria-labelledby="why-title">
+  <svg class="why__lattice" aria-hidden="true" focusable="false">
+    <defs>
+      <pattern id="revzen-lattice" width="88" height="88" patternUnits="userSpaceOnUse">
+        <g fill="none" stroke="currentColor" stroke-width="1.2">
+          <rect x="22" y="22" width="44" height="44"></rect>
+          <path d="M44 12.9 L75.1 44 L44 75.1 L12.9 44 Z"></path>
+          <path d="M44 0 V12.9 M44 75.1 V88 M0 44 H12.9 M75.1 44 H88"></path>
+          <path d="M22 22 L0 0 M66 22 L88 0 M66 66 L88 88 M22 66 L0 88"></path>
+          <circle cx="44" cy="44" r="7"></circle>
+        </g>
+      </pattern>
+    </defs>
+    <rect width="100%" height="100%" fill="url(#revzen-lattice)"></rect>
+  </svg>
+  <div class="wrap">
+    <div class="why__inner">
+      <h2 class="why__heading" id="why-title">{t.why.heading}</h2>
+      <p class="why__text">{t.why.text}</p>
+    </div>
+  </div>
+</section>

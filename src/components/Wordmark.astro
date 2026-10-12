@@ -1,0 +1,9 @@
+---
+interface Props {
+  class?: string;
+  tag?: 'span' | 'p' | 'div';
+}
+const { class: cls, tag: Tag = 'span' } = Astro.props;
+---
+
+<Tag class:list={['wordmark', cls]}>REVZEN</Tag>

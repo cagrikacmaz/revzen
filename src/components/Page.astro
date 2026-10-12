@@ -1,6 +1,27 @@
 ---
+import fs from 'node:fs';
+import path from 'node:path';
 import Base from '../layouts/Base.astro';
+import Nav from './Nav.astro';
+import Wordmark from './Wordmark.astro';
+import Hero from './sections/Hero.astro';
+import Why from './sections/Why.astro';
+import Product from './sections/Product.astro';
+import Category from './sections/Category.astro';
+import Market from './sections/Market.astro';
+import Progress from './sections/Progress.astro';
+import Ask from './sections/Ask.astro';
+import Model from './sections/Model.astro';
+import Scale from './sections/Scale.astro';
+import Stress from './sections/Stress.astro';
+import Costs from './sections/Costs.astro';
+import Plan from './sections/Plan.astro';
+import Terms from './sections/Terms.astro';
+import Makers from './sections/Makers.astro';
+import Next from './sections/Next.astro';
 import { dicts, type Lang } from '../i18n';
+import { url } from '../lib/paths';
+import { DECK_FILE } from '../lib/contact';
 
 interface Props {
   lang: Lang;
@@ -8,12 +29,36 @@ interface Props {
 
 const { lang } = Astro.props;
 const t = dicts[lang];
+
+// The deck PDF is optional: hide every download link when it is not in public/.
+const hasDeck = fs.existsSync(path.join(process.cwd(), 'public', DECK_FILE));
+const deckHref = hasDeck ? url(DECK_FILE) : null;
 ---
 
 <Base lang={lang}>
-  <main>
-    <p>REVZEN</p>
-    <p>{t.brandLine}</p>
-    <h1>{t.hero.headline}</h1>
+  <a class="skip-link" href="#main">{t.ui.skipToContent}</a>
+  <Nav lang={lang} deckHref={deckHref} />
+  <main id="main" tabindex="-1">
+    <Hero t={t} />
+    <Why t={t} />
+    <Product t={t} />
+    <Category t={t} />
+    <Market t={t} />
+    <Progress t={t} />
+    <Ask t={t} />
+    <Model t={t} />
+    <Scale t={t} />
+    <Stress t={t} lang={lang} />
+    <Costs t={t} />
+    <Plan t={t} />
+    <Terms t={t} />
+    <Makers t={t} />
+    <Next t={t} deckHref={deckHref} />
   </main>
+  <footer class="footer">
+    <div class="wrap footer__inner">
+      <Wordmark />
+      <p>{t.footer.text}</p>
+    </div>
+  </footer>
 </Base>

@@ -1,0 +1,63 @@
+---
+import SectionHead from '../SectionHead.astro';
+import type { Dict } from '../../i18n';
+
+interface Props {
+  t: Dict;
+}
+const { t } = Astro.props;
+const s = t.terms;
+---
+
+<section class="section" id="terms" data-section data-nav-group="terms" aria-labelledby="terms-title">
+  <div class="wrap">
+    <SectionHead id="terms" num="11" eyebrow={s.eyebrow} headline={s.headline} subhead={s.subhead} />
+    <div class="model__grid" style="margin-top:0">
+      <div class="table-wrap">
+        <table class="table table--cards">
+          <caption>{s.equityTitle}</caption>
+          <thead>
+            <tr>{s.equityColumns.map((c) => <th scope="col" class="num">{c}</th>)}</tr>
+          </thead>
+          <tbody>
+            {
+              s.equityRows.map((r) => (
+                <tr>
+                  <th scope="row" class="num">
+                    {r[0]}
+                  </th>
+                  <td class="num" data-label={s.equityColumns[1]}>
+                    {r[1]}
+                  </td>
+                  <td class="num" data-label={s.equityColumns[2]}>
+                    {r[2]}
+                  </td>
+                </tr>
+              ))
+            }
+          </tbody>
+        </table>
+      </div>
+      <div>
+        <h3 class="mix__title">{s.rolesTitle}</h3>
+        <ul class="grid" style="list-style:none;margin:0;padding:0">
+          {
+            s.roles.map((r, i) => (
+              <li class:list={['card', 'role', { 'role--investor': i === s.roles.length - 1 }]}>
+                <p class="role__who">{r.who}</p>
+                <h4 class="card-title" style="margin:0.25rem 0">
+                  {r.title}
+                </h4>
+                <p class="muted small">{r.text}</p>
+              </li>
+            ))
+          }
+        </ul>
+      </div>
+    </div>
+    <aside class="callout callout--coral" style="margin-top:clamp(1.25rem,3vw,1.5rem)" aria-labelledby="limits-title">
+      <h3 class="callout__title" id="limits-title">{s.limitsTitle}</h3>
+      <p>{s.limitsText}</p>
+    </aside>
+  </div>
+</section>

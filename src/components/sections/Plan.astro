@@ -1,0 +1,49 @@
+---
+import SectionHead from '../SectionHead.astro';
+import type { Dict } from '../../i18n';
+
+interface Props {
+  t: Dict;
+}
+const { t } = Astro.props;
+const p = t.plan;
+---
+
+<section class="section" id="plan" data-section data-nav-group="plan" aria-labelledby="plan-title">
+  <div class="wrap">
+    <SectionHead id="plan" num="10" eyebrow={p.eyebrow} headline={p.headline} subhead={p.subhead} />
+    <ol class="timeline">
+      {
+        p.phases.map((ph, i) => (
+          <>
+            <li class="phase">
+              <p class="phase__days">{ph.days}</p>
+              <h3 class="phase__title">{ph.title}</h3>
+              <p class="phase__scope">{ph.scope}</p>
+              <p class="phase__text">{ph.text}</p>
+            </li>
+            {i < p.phases.length - 1 && (
+              <li class="gate">
+                <span class="gate__mark" aria-hidden="true" />
+                {p.gateLabel}
+              </li>
+            )}
+          </>
+        ))
+      }
+    </ol>
+    <div class="card criteria">
+      <h3 class="card-title">{p.criteriaTitle}</h3>
+      <ol>
+        {
+          p.criteria.map((c) => (
+            <li>
+              <span class="criteria__box" aria-hidden="true" />
+              <span>{c}</span>
+            </li>
+          ))
+        }
+      </ol>
+    </div>
+  </div>
+</section>

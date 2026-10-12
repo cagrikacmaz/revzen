@@ -1,0 +1,63 @@
+---
+import SectionHead from '../SectionHead.astro';
+import type { Dict } from '../../i18n';
+
+interface Props {
+  t: Dict;
+}
+const { t } = Astro.props;
+const p = t.progress;
+---
+
+<section class="section" id="progress" data-section data-nav-group="market" aria-labelledby="progress-title">
+  <div class="wrap">
+    <SectionHead id="progress" num="04" eyebrow={p.eyebrow} headline={p.headline} />
+    <div class="grid grid--2">
+      <div class="card">
+        <h3 class="card-title">{p.doneTitle}</h3>
+        <ul class="checklist">
+          {
+            p.done.map((d) => (
+              <li>
+                <svg class="checklist__mark" viewBox="0 0 24 24" role="img" aria-label={p.doneStatus}>
+                  <circle cx="12" cy="12" r="11" fill="#63D6C6" />
+                  <path
+                    d="M7 12.5l3.2 3.2L17 9"
+                    fill="none"
+                    stroke="#04221E"
+                    stroke-width="2.2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  />
+                </svg>
+                <span>
+                  <span class="checklist__item">{d.item}</span>
+                  <span class="checklist__status">{d.status}</span>
+                </span>
+              </li>
+            ))
+          }
+        </ul>
+      </div>
+      <div class="card">
+        <h3 class="card-title">{p.nextTitle}</h3>
+        <ul class="checklist">
+          {
+            p.next.map((n) => (
+              <li>
+                <svg class="checklist__mark" viewBox="0 0 24 24" role="img" aria-label={p.nextStatus}>
+                  <circle cx="12" cy="12" r="10" fill="none" stroke="#8596AE" stroke-width="2" />
+                </svg>
+                <span class="checklist__item">{n}</span>
+              </li>
+            ))
+          }
+        </ul>
+      </div>
+    </div>
+    <div class="callout callout--plain range-box">
+      <p class="range-box__value">{p.rangeValue}</p>
+      <p class="muted">{p.rangeText}</p>
+    </div>
+  </div>
+</section>

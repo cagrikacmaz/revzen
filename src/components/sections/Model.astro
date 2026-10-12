@@ -1,0 +1,46 @@
+---
+import SectionHead from '../SectionHead.astro';
+import Metrics from '../Metrics.astro';
+import Waterfall from '../Waterfall.astro';
+import type { Dict } from '../../i18n';
+
+interface Props {
+  t: Dict;
+}
+const { t } = Astro.props;
+const m = t.model;
+---
+
+<section class="section" id="model" data-section data-nav-group="model" aria-labelledby="model-title">
+  <div class="wrap">
+    <SectionHead id="model" num="06" eyebrow={m.eyebrow} headline={m.headline} subhead={m.subhead} />
+    <Metrics items={m.metrics} />
+    <div class="model__grid">
+      <div class="table-wrap">
+        <table class="table table--cards">
+          <caption>{m.unitTableCaption}</caption>
+          <thead>
+            <tr>
+              {m.unitColumns.map((c, i) => (i === 0 ? <td /> : <th scope="col" class="num">{c}</th>))}
+            </tr>
+          </thead>
+          <tbody>
+            {
+              m.unitRows.map((r, ri) => (
+                <tr class:list={{ 'row--subtotal': ri === m.unitRows.length - 1 }}>
+                  <th scope="row">{r[0]}</th>
+                  {r.slice(1).map((cell, i) => (
+                    <td class="num" data-label={m.unitColumns[i + 1]}>
+                      {cell}
+                    </td>
+                  ))}
+                </tr>
+              ))
+            }
+          </tbody>
+        </table>
+      </div>
+      <Waterfall id="bridge-1000" title={m.bridgeTitle} steps={m.bridge} sum={m.bridgeSum} />
+    </div>
+  </div>
+</section>

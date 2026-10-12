@@ -1,0 +1,51 @@
+---
+import SectionHead from '../SectionHead.astro';
+import type { Dict } from '../../i18n';
+
+interface Props {
+  t: Dict;
+}
+const { t } = Astro.props;
+const m = t.market;
+---
+
+<section class="section" id="market" data-section data-nav-group="market" aria-labelledby="market-title">
+  <div class="wrap">
+    <SectionHead id="market" num="03" eyebrow={m.eyebrow} headline={m.headline} subhead={m.lead} />
+    <div class="grid grid--3">
+      {
+        m.channels.map((ch) => (
+          <article class="card">
+            <span class="channel__num" aria-hidden="true">
+              {ch.num}
+            </span>
+            <h3 class="card-title">{ch.title}</h3>
+            <p class="muted">{ch.text}</p>
+            {ch.steps.length > 0 && (
+              <ol class="flow" aria-label={m.stepsLabel}>
+                {ch.steps.map((s) => (
+                  <li>{s}</li>
+                ))}
+              </ol>
+            )}
+          </article>
+        ))
+      }
+    </div>
+    <div class="mix">
+      <h3 class="mix__title" id="mix-title">{m.mixTitle}</h3>
+      <div class="mix__bar" role="img" aria-labelledby="mix-title mix-desc">
+        {
+          m.mix.map((seg, i) => (
+            <div class:list={['mix__seg', i === 0 ? 'mix__seg--a' : 'mix__seg--b']} style={`flex:${seg.share}`}>
+              <span>{seg.label}</span>
+              <span class="num">{seg.display}</span>
+            </div>
+          ))
+        }
+      </div>
+      <p class="visually-hidden" id="mix-desc">{m.mix.map((s) => `${s.label} ${s.display}`).join(', ')}</p>
+    </div>
+    <p class="note">{m.note}</p>
+  </div>
+</section>
