@@ -27,8 +27,8 @@ const wa = whatsappUrl(t.ui.whatsappMessage);
         {deckHref && <a class="nav__action nav__action--deck" href={deckHref} download>{t.ui.downloadDeck}</a>}
         <div class="lang">
           <span aria-current="true" lang={lang}>{lang.toUpperCase()}</span>
-          <a href={url(`${other}/`)} hreflang={other} lang={other} aria-label={t.ui.langSwitchLabel} data-lang-switch>
-            {other.toUpperCase()}
+          <a href={url(`${other}/`)} hreflang={other} lang={other} data-lang-switch>
+            {other.toUpperCase()}<span class="visually-hidden" lang={lang}> ({t.ui.langSwitchLabel})</span>
           </a>
         </div>
         <button class="nav__toggle" type="button" aria-expanded="false" aria-controls="nav-menu" data-nav-toggle>
