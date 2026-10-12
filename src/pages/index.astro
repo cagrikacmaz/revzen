@@ -1,0 +1,35 @@
+---
+import { url } from '../lib/paths';
+
+const tr = url('tr/');
+const en = url('en/');
+---
+
+<!doctype html>
+<html lang="tr">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="robots" content="noindex, nofollow" />
+    <title>Revzen</title>
+    <link rel="icon" href={url('favicon.svg')} type="image/svg+xml" />
+    <script is:inline define:vars={{ tr, en }}>
+      var langs = navigator.languages && navigator.languages.length ? navigator.languages : [navigator.language || 'tr'];
+      var target = tr;
+      for (var i = 0; i < langs.length; i++) {
+        var code = String(langs[i]).toLowerCase();
+        if (code.indexOf('tr') === 0) { target = tr; break; }
+        if (code.indexOf('en') === 0) { target = en; break; }
+      }
+      location.replace(target + location.hash);
+    </script>
+    <noscript><meta http-equiv="refresh" content={`0; url=${tr}`} /></noscript>
+    <style>
+      body { margin: 0; min-height: 100vh; display: grid; place-items: center; background: #0b1220; color: #eef2f8; font-family: system-ui, sans-serif; }
+      a { color: #ffb65c; margin: 0 0.75rem; }
+    </style>
+  </head>
+  <body>
+    <p><a href={tr} hreflang="tr" lang="tr">Türkçe</a><a href={en} hreflang="en" lang="en">English</a></p>
+  </body>
+</html>

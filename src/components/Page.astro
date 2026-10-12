@@ -1,0 +1,19 @@
+---
+import Base from '../layouts/Base.astro';
+import { dicts, type Lang } from '../i18n';
+
+interface Props {
+  lang: Lang;
+}
+
+const { lang } = Astro.props;
+const t = dicts[lang];
+---
+
+<Base lang={lang}>
+  <main>
+    <p>REVZEN</p>
+    <p>{t.brandLine}</p>
+    <h1>{t.hero.headline}</h1>
+  </main>
+</Base>

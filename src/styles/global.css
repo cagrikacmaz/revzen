@@ -1,0 +1,9 @@
+:root {
+  --bg: #0b1220;
+  --surface: #15233a;
+  --text: #eef2f8;
+  --amber: #ffb65c;
+  font-family: 'Manrope Variable', system-ui, sans-serif;
+  color: var(--text);
+  background: var(--bg);
+}
