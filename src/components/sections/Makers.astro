@@ -4,14 +4,15 @@ import type { Dict } from '../../i18n';
 
 interface Props {
   t: Dict;
+  num: string;
 }
-const { t } = Astro.props;
+const { t, num } = Astro.props;
 const m = t.makers;
 ---
 
 <section class="section" id="makers" data-section data-nav-group="terms" aria-labelledby="makers-title">
   <div class="wrap">
-    <SectionHead id="makers" num="12" eyebrow={m.eyebrow} headline={m.headline} />
+    <SectionHead id="makers" num={num} eyebrow={m.eyebrow} headline={m.headline} />
     <div class="grid grid--3">
       {
         m.cards.map((c) => (

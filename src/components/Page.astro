@@ -1,27 +1,21 @@
 ---
-import fs from 'node:fs';
-import path from 'node:path';
 import Base from '../layouts/Base.astro';
 import Nav from './Nav.astro';
 import Wordmark from './Wordmark.astro';
 import Hero from './sections/Hero.astro';
 import Why from './sections/Why.astro';
 import Product from './sections/Product.astro';
-import Category from './sections/Category.astro';
+import Uses from './sections/Uses.astro';
 import Market from './sections/Market.astro';
 import Progress from './sections/Progress.astro';
 import Ask from './sections/Ask.astro';
-import Model from './sections/Model.astro';
-import Scale from './sections/Scale.astro';
-import Stress from './sections/Stress.astro';
-import Costs from './sections/Costs.astro';
+import Profit from './sections/Profit.astro';
+import Calculator from './sections/Calculator.astro';
 import Plan from './sections/Plan.astro';
 import Terms from './sections/Terms.astro';
 import Makers from './sections/Makers.astro';
 import Next from './sections/Next.astro';
 import { dicts, type Lang } from '../i18n';
-import { url } from '../lib/paths';
-import { DECK_FILE } from '../lib/contact';
 
 interface Props {
   lang: Lang;
@@ -30,30 +24,27 @@ interface Props {
 const { lang } = Astro.props;
 const t = dicts[lang];
 
-// The deck PDF is optional: hide every download link when it is not in public/.
-const hasDeck = fs.existsSync(path.join(process.cwd(), 'public', DECK_FILE));
-const deckHref = hasDeck ? url(DECK_FILE) : null;
+// Eyebrow numbers follow the section order.
+const n = (i: number) => String(i).padStart(2, '0');
 ---
 
 <Base lang={lang}>
   <a class="skip-link" href="#main">{t.ui.skipToContent}</a>
-  <Nav lang={lang} deckHref={deckHref} />
+  <Nav lang={lang} />
   <main id="main" tabindex="-1">
     <Hero t={t} />
     <Why t={t} />
-    <Product t={t} />
-    <Category t={t} />
-    <Market t={t} />
-    <Progress t={t} />
-    <Ask t={t} />
-    <Model t={t} />
-    <Scale t={t} />
-    <Stress t={t} lang={lang} />
-    <Costs t={t} />
-    <Plan t={t} />
-    <Terms t={t} />
-    <Makers t={t} />
-    <Next t={t} deckHref={deckHref} />
+    <Product t={t} num={n(1)} />
+    <Uses t={t} num={n(2)} />
+    <Market t={t} num={n(3)} />
+    <Progress t={t} num={n(4)} />
+    <Ask t={t} lang={lang} num={n(5)} />
+    <Profit t={t} lang={lang} num={n(6)} />
+    <Calculator t={t} lang={lang} num={n(7)} />
+    <Plan t={t} num={n(8)} />
+    <Terms t={t} num={n(9)} />
+    <Makers t={t} num={n(10)} />
+    <Next t={t} num={n(11)} />
   </main>
   <footer class="footer">
     <div class="wrap footer__inner">

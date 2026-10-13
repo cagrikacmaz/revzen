@@ -4,14 +4,15 @@ import type { Dict } from '../../i18n';
 
 interface Props {
   t: Dict;
+  num: string;
 }
-const { t } = Astro.props;
+const { t, num } = Astro.props;
 const m = t.market;
 ---
 
 <section class="section" id="market" data-section data-nav-group="market" aria-labelledby="market-title">
   <div class="wrap">
-    <SectionHead id="market" num="03" eyebrow={m.eyebrow} headline={m.headline} subhead={m.lead} />
+    <SectionHead id="market" num={num} eyebrow={m.eyebrow} headline={m.headline} subhead={m.lead} />
     <div class="grid grid--3">
       {
         m.channels.map((ch) => (

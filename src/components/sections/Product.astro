@@ -5,18 +5,19 @@ import type { Dict } from '../../i18n';
 
 interface Props {
   t: Dict;
+  num: string;
 }
-const { t } = Astro.props;
+const { t, num } = Astro.props;
 const p = t.product;
 ---
 
 <section class="section" id="product" data-section data-nav-group="product" aria-labelledby="product-title">
   <div class="wrap">
-    <SectionHead id="product" num="01" eyebrow={p.eyebrow} headline={p.headline} subhead={p.thesis} />
+    <SectionHead id="product" num={num} eyebrow={p.eyebrow} headline={p.headline} subhead={p.thesis} />
+    <div class="mount-intro">
+      <h3 class="mount-intro__heading">{p.mountHeading}</h3>
+      <p class="mount-intro__text">{p.mountText}</p>
+    </div>
     <SunClock t={t} id="sun-full" variant="full" />
-    <aside class="callout callout--amber acceptance" aria-labelledby="acceptance-title">
-      <h3 class="callout__title" id="acceptance-title">{p.acceptanceTitle}</h3>
-      <p>{p.acceptanceText}</p>
-    </aside>
   </div>
 </section>

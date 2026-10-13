@@ -6,10 +6,9 @@ import { whatsappUrl } from '../lib/contact';
 
 interface Props {
   lang: Lang;
-  deckHref: string | null;
 }
 
-const { lang, deckHref } = Astro.props;
+const { lang } = Astro.props;
 const t = dicts[lang];
 const other = otherLang(lang);
 const wa = whatsappUrl(t.ui.whatsappMessage);
@@ -24,7 +23,6 @@ const wa = whatsappUrl(t.ui.whatsappMessage);
       </ul>
       <div class="nav__actions">
         <a class="nav__action" href={wa} target="_blank" rel="noopener">{t.ui.whatsapp}</a>
-        {deckHref && <a class="nav__action nav__action--deck" href={deckHref} download>{t.ui.downloadDeck}</a>}
         <div class="lang">
           <span aria-current="true" lang={lang}>{lang.toUpperCase()}</span>
           <a href={url(`${other}/`)} hreflang={other} lang={other} data-lang-switch>
@@ -42,7 +40,6 @@ const wa = whatsappUrl(t.ui.whatsappMessage);
       </ul>
       <div class="nav__menu-extra">
         <a href={wa} target="_blank" rel="noopener">{t.ui.whatsapp}</a>
-        {deckHref && <a href={deckHref} download>{t.ui.downloadDeck}</a>}
       </div>
     </div>
   </div>

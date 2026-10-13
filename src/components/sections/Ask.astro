@@ -1,34 +1,36 @@
 ---
 import SectionHead from '../SectionHead.astro';
-import type { Dict } from '../../i18n';
+import type { Dict, Lang } from '../../i18n';
+import { formatUsd } from '../../lib/format';
 
 interface Props {
   t: Dict;
+  lang: Lang;
+  num: string;
 }
-const { t } = Astro.props;
+const { t, lang, num } = Astro.props;
 const a = t.ask;
 // Largest first; equal amounts keep the deck order.
 const bars = [...a.bars].sort((x, y) => y.value - x.value);
 const max = bars[0].value;
-const RESERVE_INDEX = 6;
-const reserveLabel = a.bars[RESERVE_INDEX].label;
+const total = a.bars.reduce((sum, b) => sum + b.value, 0);
 ---
 
 <section class="section" id="ask" data-section data-nav-group="ask" aria-labelledby="ask-title">
   <div class="wrap">
-    <SectionHead id="ask" num="05" eyebrow={a.eyebrow} headline={a.headline} subhead={a.subhead} />
+    <SectionHead id="ask" num={num} eyebrow={a.eyebrow} headline={a.headline} subhead={a.subhead} />
     <figure class="card" style="margin:0" aria-labelledby="funds-title">
       <h3 class="card-title" id="funds-title">{a.chartTitle}</h3>
       <ol class="bars">
         {
           bars.map((b) => (
-            <li class:list={['bar', { 'bar--reserve': b.label === reserveLabel }]}>
+            <li class:list={['bar', { 'bar--reserve': b.reserve }]}>
               <div class="bar__head">
                 <span class="bar__label">{b.label}</span>
                 <span class="bar__value">{b.display}</span>
               </div>
               <svg viewBox={`0 0 ${max} 12`} preserveAspectRatio="none" aria-hidden="true" focusable="false">
-                <rect class="bar__track" x="0" y="0" width={max} height="12" rx="0" />
+                <rect class="bar__track" x="0" y="0" width={max} height="12" />
                 <rect class="bar__fill" x="0" y="0" width={b.value} height="12" />
               </svg>
             </li>
@@ -37,7 +39,7 @@ const reserveLabel = a.bars[RESERVE_INDEX].label;
       </ol>
       <p class="bars__total">
         <span>{a.totalLabel}</span>
-        <span>{a.totalDisplay}</span>
+        <span>{formatUsd(total, lang)}</span>
       </p>
     </figure>
     <p class="note">{a.note}</p>

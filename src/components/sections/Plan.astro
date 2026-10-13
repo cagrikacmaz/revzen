@@ -4,14 +4,15 @@ import type { Dict } from '../../i18n';
 
 interface Props {
   t: Dict;
+  num: string;
 }
-const { t } = Astro.props;
+const { t, num } = Astro.props;
 const p = t.plan;
 ---
 
 <section class="section" id="plan" data-section data-nav-group="plan" aria-labelledby="plan-title">
   <div class="wrap">
-    <SectionHead id="plan" num="10" eyebrow={p.eyebrow} headline={p.headline} subhead={p.subhead} />
+    <SectionHead id="plan" num={num} eyebrow={p.eyebrow} headline={p.headline} subhead={p.subhead} />
     <ol class="timeline">
       {
         p.phases.map((ph, i) => (
@@ -33,13 +34,16 @@ const p = t.plan;
       }
     </ol>
     <div class="card criteria">
-      <h3 class="card-title">{p.criteriaTitle}</h3>
+      <h3 class="card-title">{p.milestonesTitle}</h3>
       <ol>
         {
-          p.criteria.map((c) => (
+          p.milestones.map((m) => (
             <li>
-              <span class="criteria__box" aria-hidden="true" />
-              <span>{c}</span>
+              <svg class="criteria__target" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                <circle cx="12" cy="12" r="9" />
+                <circle cx="12" cy="12" r="4" />
+              </svg>
+              <span>{m}</span>
             </li>
           ))
         }

@@ -4,15 +4,15 @@ import { whatsappUrl } from '../../lib/contact';
 
 interface Props {
   t: Dict;
-  deckHref: string | null;
+  num: string;
 }
-const { t, deckHref } = Astro.props;
+const { t, num } = Astro.props;
 const n = t.next;
 ---
 
 <section class="section next" id="next" data-section data-nav-group="terms" aria-labelledby="next-title">
   <div class="wrap">
-    <p class="eyebrow"><span class="eyebrow__num" aria-hidden="true">13</span>{n.eyebrow}</p>
+    <p class="eyebrow"><span class="eyebrow__num" aria-hidden="true">{num}</span>{n.eyebrow}</p>
     <h2 class="headline next__line" id="next-title">{n.line}</h2>
     <ol class="flow next__flow" aria-label={n.stepsLabel}>
       {
@@ -33,13 +33,6 @@ const n = t.next;
         {t.ui.whatsappCta}
         <span class="visually-hidden">{t.ui.opensInNewTab}</span>
       </a>
-      {
-        deckHref && (
-          <a class="btn btn--ghost" href={deckHref} download>
-            {t.ui.downloadDeckPdf}
-          </a>
-        )
-      }
     </div>
   </div>
 </section>

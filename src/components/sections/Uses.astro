@@ -1,0 +1,39 @@
+---
+import SectionHead from '../SectionHead.astro';
+import type { Dict } from '../../i18n';
+
+interface Props {
+  t: Dict;
+  num: string;
+}
+const { t, num } = Astro.props;
+const u = t.uses;
+
+// Simple line icons on a 32 x 32 grid, stroked with currentColor.
+const icons: Record<string, string> = {
+  villa: 'M4 15 L16 5 L28 15 M7 13 V27 H25 V13 M13 27 V19 H19 V27',
+  spa: 'M5 27 H27 M7 27 V18 A9 9 0 0 1 25 18 V27 M16 9 V5 M13 18 h0.01 M16 15 h0.01 M19 18 h0.01 M16 21 h0.01',
+  office: 'M5 27 H27 M8 27 V8 H24 V27 M12 12 H14 M18 12 H20 M12 17 H14 M18 17 H20 M14 27 V22 H18 V27',
+  clinic: 'M6 6 H26 V26 H6 Z M16 11 V21 M11 16 H21',
+  retail: 'M7 11 H25 L23 27 H9 Z M12 11 V9 A4 4 0 0 1 20 9 V11',
+};
+---
+
+<section class="section" id="uses" data-section data-nav-group="uses" aria-labelledby="uses-title">
+  <div class="wrap">
+    <SectionHead id="uses" num={num} eyebrow={u.eyebrow} headline={u.headline} />
+    <ul class="uses">
+      {
+        u.items.map((item) => (
+          <li class="use">
+            <svg class="use__icon" viewBox="0 0 32 32" aria-hidden="true" focusable="false">
+              <path d={icons[item.icon]} />
+            </svg>
+            <h3 class="use__title">{item.title}</h3>
+            <p class="use__text">{item.text}</p>
+          </li>
+        ))
+      }
+    </ul>
+  </div>
+</section>

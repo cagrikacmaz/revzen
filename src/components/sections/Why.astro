@@ -25,7 +25,7 @@ const { t } = Astro.props;
   <div class="wrap">
     <div class="why__inner">
       <h2 class="why__heading" id="why-title">{t.why.heading}</h2>
-      <p class="why__text">{t.why.text}</p>
+      {t.why.paragraphs.map((p) => <p class="why__text">{p}</p>)}
     </div>
   </div>
 </section>

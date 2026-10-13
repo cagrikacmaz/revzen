@@ -4,14 +4,15 @@ import type { Dict } from '../../i18n';
 
 interface Props {
   t: Dict;
+  num: string;
 }
-const { t } = Astro.props;
+const { t, num } = Astro.props;
 const s = t.terms;
 ---
 
 <section class="section" id="terms" data-section data-nav-group="terms" aria-labelledby="terms-title">
   <div class="wrap">
-    <SectionHead id="terms" num="11" eyebrow={s.eyebrow} headline={s.headline} subhead={s.subhead} />
+    <SectionHead id="terms" num={num} eyebrow={s.eyebrow} headline={s.headline} subhead={s.subhead} />
     <div class="model__grid" style="margin-top:0">
       <div class="table-wrap">
         <table class="table table--cards">
@@ -55,9 +56,10 @@ const s = t.terms;
         </ul>
       </div>
     </div>
-    <aside class="callout callout--coral" style="margin-top:clamp(1.25rem,3vw,1.5rem)" aria-labelledby="limits-title">
-      <h3 class="callout__title" id="limits-title">{s.limitsTitle}</h3>
-      <p>{s.limitsText}</p>
+    <aside class="callout callout--teal founders" aria-labelledby="founders-title">
+      <h3 class="callout__title" id="founders-title">{s.foundersTitle}</h3>
+      <p class="founders__value">{s.foundersValue}</p>
+      <p>{s.foundersText}</p>
     </aside>
   </div>
 </section>
