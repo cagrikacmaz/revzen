@@ -19,8 +19,8 @@ npm run build    # static build into dist/
 All copy lives in `src/i18n/tr.ts` and `src/i18n/en.ts`. Components read from these files only.
 The scenario calculator logic is in `src/lib/calc.ts` and is covered by `src/lib/calc.test.ts`.
 
-The deck PDF is served from `public/Dinamik_Yapay_Pencere_Yatirimci_Sunumu.pdf`.
-If the file is missing at build time, the download links are hidden automatically.
+There is intentionally no deck download. The earlier PDF predates the Revzen name and its framing,
+so PDFs in `public/` are ignored by git until a new deck exists.
 
 ## Deployment
 

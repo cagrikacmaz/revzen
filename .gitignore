@@ -8,3 +8,5 @@ dist/
 .DS_Store
 Thumbs.db
 artifacts/
+# No deck PDF is published until a new deck exists
+public/*.pdf
