@@ -21,6 +21,21 @@ const OBJECT_WIDTH = 60;
 /** Horizontal travel of the sun disc inside the window panel. */
 const SUN_TRAVEL = 112;
 
+/* Wall mount: window in the left wall, light enters from the side. */
+/** Inner face of the left wall. */
+const WALL_X = 56;
+const WALL_WIN_TOP = 130;
+const WALL_WIN_BOTTOM = 290;
+const FLOOR_Y = 352;
+/** Beam elevation above horizontal: lowest at 06:00 and 20:00, highest at noon. */
+const ELEV_MIN = 12;
+const ELEV_MAX = 60;
+const WALL_OBJECT_HEIGHT = 94;
+const WALL_OBJECT_HALF = 20;
+/** Travel of the sun disc inside the wall panel. */
+const WALL_DISC_X = 12;
+const WALL_DISC_Y = 56;
+
 const COLOUR_STOPS: Array<[number, [number, number, number]]> = [
   [360, [255, 150, 80]],
   [480, [255, 190, 118]],
@@ -47,6 +62,13 @@ export interface SunState {
   sunShift: number;
   /** Signed length of the cast shadow, measured from the pot centre. */
   shadowCast: number;
+  /** Wall mount: beam elevation above horizontal in degrees. */
+  wallElevation: number;
+  wallPatchX: number;
+  wallPatchWidth: number;
+  wallShadow: number;
+  wallDiscX: number;
+  wallDiscY: number;
 }
 
 export const clampTime = (m: number) => Math.min(MAX_TIME, Math.max(MIN_TIME, m));
@@ -100,6 +122,24 @@ export function sunState(minutes: number, mode: SunMode = 'directional'): SunSta
     patchShift: tan * ROOM_HEIGHT,
     sunShift: -(realAngle / MAX_ANGLE) * SUN_TRAVEL,
     shadowCast: (shadowLength < 0 ? -1 : 1) * (OBJECT_WIDTH / 2 + Math.abs(shadowLength) * 1.3),
+    ...wallGeometry(f, realAngle, mode),
+  };
+}
+
+function wallGeometry(f: number, realAngle: number, mode: SunMode) {
+  const realElevation = ELEV_MIN + (ELEV_MAX - ELEV_MIN) * Math.sin(Math.PI * f);
+  const elevation = mode === 'directional' ? realElevation : ELEV_MAX;
+  const tan = Math.tan((elevation * Math.PI) / 180);
+  const near = WALL_X + (FLOOR_Y - WALL_WIN_BOTTOM) / tan;
+  const far = Math.min(700, WALL_X + (FLOOR_Y - WALL_WIN_TOP) / tan);
+  const k = (realElevation - ELEV_MIN) / (ELEV_MAX - ELEV_MIN);
+  return {
+    wallElevation: elevation,
+    wallPatchX: near,
+    wallPatchWidth: Math.max(1, far - near),
+    wallShadow: Math.min(600, WALL_OBJECT_HALF + WALL_OBJECT_HEIGHT / tan),
+    wallDiscX: -(realAngle / MAX_ANGLE) * WALL_DISC_X,
+    wallDiscY: (1 - 2 * k) * WALL_DISC_Y,
   };
 }
 
@@ -112,6 +152,11 @@ export function sunStyle(s: SunState): Record<string, string> {
     '--sun-patch': `${s.patchShift.toFixed(1)}px`,
     '--sun-disc': `${s.sunShift.toFixed(1)}px`,
     '--sun-shadow': s.shadowCast.toFixed(2),
+    '--wall-skew': `${s.wallElevation.toFixed(2)}deg`,
+    '--wall-patch-x': `${s.wallPatchX.toFixed(1)}px`,
+    '--wall-patch-w': s.wallPatchWidth.toFixed(1),
+    '--wall-shadow': s.wallShadow.toFixed(1),
+    '--wall-disc': `${s.wallDiscX.toFixed(1)}px, ${s.wallDiscY.toFixed(1)}px`,
   };
 }
 

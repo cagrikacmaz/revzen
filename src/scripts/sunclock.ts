@@ -5,6 +5,8 @@ interface Labels {
   dirWest: string;
   dirOverhead: string;
   dirFixed: string;
+  wallAngle: string;
+  wallFixed: string;
   toneWarm: string;
   toneNeutral: string;
   toneOrange: string;
@@ -58,6 +60,11 @@ function setup(root: HTMLElement) {
     if (rd) rd.textContent = dir;
     const rl = read('level');
     if (rl) rl.textContent = level;
+    const rw = read('wall');
+    if (rw) {
+      rw.textContent =
+        mode === 'colour' ? labels.wallFixed : labels.wallAngle.replace('{deg}', String(Math.round(s.wallElevation)));
+    }
     const rto = read('tone');
     if (rto) rto.textContent = tone;
 
@@ -141,7 +148,7 @@ function setup(root: HTMLElement) {
       },
       { threshold: 0.5 },
     );
-    io.observe(root);
+    io.observe(root.querySelector('.sunclock__stage') ?? root);
   }
 
   window.addEventListener('beforeprint', stop);
