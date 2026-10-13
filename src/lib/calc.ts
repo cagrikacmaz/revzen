@@ -15,27 +15,38 @@ export const SCENARIOS: Record<ScenarioKey, ScenarioBase> = {
   '10000': { units: 10000, price: 1000, landed: 420, channel: 160, service: 80, fixed: 1250000 },
 };
 
+/** Corporate tax rate applied to a positive pre-tax profit. */
+export const TAX_RATE = 0.25;
+
 export interface Deviation {
-  /** Price deviation in whole percent, e.g. -15. */
+  /** Price change in whole percent, e.g. -15. */
   pricePct: number;
-  /** Product / landed cost deviation in whole percent, e.g. 20. */
+  /** Product / landed cost change in whole percent, e.g. 20. */
   costPct: number;
 }
 
 export const PRESETS = {
-  downside: { pricePct: -15, costPct: 20 },
+  cautious: { pricePct: -15, costPct: 20 },
   base: { pricePct: 0, costPct: 0 },
-  upside: { pricePct: 10, costPct: -10 },
+  optimistic: { pricePct: 10, costPct: -10 },
 } satisfies Record<string, Deviation>;
 
 export type PresetKey = keyof typeof PRESETS;
 
 export interface Result {
   revenue: number;
-  contribution: number;
-  operatingResult: number;
-  unitContribution: number;
-  /** Units needed to cover fixed costs, or null when unit contribution is zero or negative. */
+  productCost: number;
+  channelCost: number;
+  serviceCost: number;
+  fixedCost: number;
+  totalCosts: number;
+  preTaxProfit: number;
+  tax: number;
+  netProfit: number;
+  netProfitPerUnit: number;
+  /** Price minus all per-unit costs, before fixed costs. */
+  unitMargin: number;
+  /** Units needed to cover fixed costs (rounded up), or null when the unit margin is zero or negative. */
   breakEvenUnits: number | null;
 }
 
@@ -45,13 +56,32 @@ export function compute(input: ScenarioBase & Deviation): Result {
   const { units, price, landed, channel, service, fixed, pricePct, costPct } = input;
   const unitPrice = (price * (100 + pricePct)) / 100;
   const unitLanded = (landed * (100 + costPct)) / 100;
-  const unitContribution = cents(unitPrice - unitLanded - channel - service);
-  const contribution = cents(units * unitContribution);
+
+  const revenue = cents(units * unitPrice);
+  const productCost = cents(units * unitLanded);
+  const channelCost = cents(units * channel);
+  const serviceCost = cents(units * service);
+  const totalCosts = cents(productCost + channelCost + serviceCost + fixed);
+  const preTaxProfit = cents(revenue - totalCosts);
+  const tax = preTaxProfit > 0 ? cents(preTaxProfit * TAX_RATE) : 0;
+  const netProfit = cents(preTaxProfit - tax);
+  const unitMargin = cents(unitPrice - unitLanded - channel - service);
+
   return {
-    revenue: cents(units * unitPrice),
-    contribution,
-    operatingResult: cents(contribution - fixed),
-    unitContribution,
-    breakEvenUnits: unitContribution > 0 ? Math.ceil(fixed / unitContribution) : null,
+    revenue,
+    productCost,
+    channelCost,
+    serviceCost,
+    fixedCost: fixed,
+    totalCosts,
+    preTaxProfit,
+    tax,
+    netProfit,
+    netProfitPerUnit: units > 0 ? cents(netProfit / units) : 0,
+    unitMargin,
+    breakEvenUnits: unitMargin > 0 ? Math.ceil(fixed / unitMargin) : null,
   };
 }
+
+/** Pre-tax profit margin in percent, rounded to one decimal. */
+export const marginPct = (r: Result) => (r.revenue > 0 ? Math.round((r.preTaxProfit / r.revenue) * 1000) / 10 : 0);
