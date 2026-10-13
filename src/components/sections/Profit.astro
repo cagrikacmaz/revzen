@@ -1,0 +1,128 @@
+---
+import SectionHead from '../SectionHead.astro';
+import type { Dict, Lang } from '../../i18n';
+import { compute, marginPct, PRESETS, SCENARIOS } from '../../lib/calc';
+import { formatUsd, formatShare } from '../../lib/format';
+
+interface Props {
+  t: Dict;
+  lang: Lang;
+  num: string;
+}
+const { t, lang, num } = Astro.props;
+const p = t.profit;
+const results = (['1000', '10000'] as const).map((k) => compute({ ...SCENARIOS[k], ...PRESETS.base }));
+const usd = (n: number) => formatUsd(n, lang);
+const neg = (n: number) => usd(-n);
+
+type Kind = 'plain' | 'cost' | 'total' | 'profit' | 'profit-total';
+const rows: { label: string; kind: Kind; values: string[] }[] = [
+  { label: p.rows.revenue, kind: 'plain', values: results.map((r) => usd(r.revenue)) },
+  { label: p.rows.product, kind: 'cost', values: results.map((r) => neg(r.productCost)) },
+  { label: p.rows.channel, kind: 'cost', values: results.map((r) => neg(r.channelCost)) },
+  { label: p.rows.service, kind: 'cost', values: results.map((r) => neg(r.serviceCost)) },
+  { label: p.rows.fixed, kind: 'cost', values: results.map((r) => neg(r.fixedCost)) },
+  { label: p.rows.totalCosts, kind: 'total', values: results.map((r) => neg(r.totalCosts)) },
+  { label: p.rows.preTax, kind: 'profit-total', values: results.map((r) => usd(r.preTaxProfit)) },
+  { label: p.rows.tax, kind: 'cost', values: results.map((r) => neg(r.tax)) },
+  { label: p.rows.net, kind: 'profit-total', values: results.map((r) => usd(r.netProfit)) },
+  { label: p.rows.netPerUnit, kind: 'profit', values: results.map((r) => usd(r.netProfitPerUnit)) },
+];
+---
+
+<section class="section" id="profit" data-section data-nav-group="profit" aria-labelledby="profit-title">
+  <div class="wrap">
+    <SectionHead id="profit" num={num} eyebrow={p.eyebrow} headline={p.headline} subhead={p.subhead} />
+
+    <div class="profit-cards">
+      {
+        results.map((r, i) => (
+          <article class="profit-card">
+            <h3 class="profit-card__title">{p.scenarios[i]}</h3>
+            <dl class="profit-card__list">
+              <div class="profit-card__main">
+                <dt>{p.preTax}</dt>
+                <dd>{usd(r.preTaxProfit)}</dd>
+              </div>
+              <div>
+                <dt>{p.net}</dt>
+                <dd>{usd(r.netProfit)}</dd>
+              </div>
+              <div>
+                <dt>{p.margin}</dt>
+                <dd>{formatShare(marginPct(r), lang)}</dd>
+              </div>
+            </dl>
+          </article>
+        ))
+      }
+    </div>
+
+    <div class="table-wrap income">
+      <table class="table table--cards">
+        <caption>{p.tableCaption}</caption>
+        <thead>
+          <tr>
+            <th scope="col">{p.itemColumn}</th>
+            {p.scenarios.map((s) => <th scope="col" class="num">{s}</th>)}
+          </tr>
+        </thead>
+        <tbody>
+          {
+            rows.map((row) => (
+              <tr class={`income-row income-row--${row.kind}`}>
+                <th scope="row">{row.label}</th>
+                {row.values.map((v, i) => (
+                  <td class="num" data-label={p.scenarios[i]}>
+                    {v}
+                  </td>
+                ))}
+              </tr>
+            ))
+          }
+        </tbody>
+      </table>
+    </div>
+
+    <p class="avg-price">{p.avgPrice}</p>
+
+    <details class="breakdown">
+      <summary>{p.fixedTitle}</summary>
+      <div class="table-wrap">
+        <table class="table table--cards">
+          <caption class="visually-hidden">{p.fixedTitle}</caption>
+          <thead>
+            <tr>
+              <th scope="col">{p.itemColumn}</th>
+              {p.scenarios.map((s) => <th scope="col" class="num">{s}</th>)}
+            </tr>
+          </thead>
+          <tbody>
+            {
+              p.fixedRows.map((r) => (
+                <tr class:list={{ 'row--total': r.total }}>
+                  <th scope="row">{r.cells[0]}</th>
+                  {r.cells.slice(1).map((cell, i) => (
+                    <td class="num" data-label={p.scenarios[i]}>
+                      {cell}
+                    </td>
+                  ))}
+                </tr>
+              ))
+            }
+          </tbody>
+        </table>
+      </div>
+    </details>
+
+    <p class="growth">{p.growth}</p>
+    <p class="note">{p.footnote}</p>
+  </div>
+</section>
+
+<script>
+  // Printed copies always show the fixed cost breakdown.
+  window.addEventListener('beforeprint', () => {
+    document.querySelectorAll<HTMLDetailsElement>('details.breakdown').forEach((d) => (d.open = true));
+  });
+</script>

@@ -4,9 +4,9 @@ import type { Lang } from '../i18n';
 
 interface Labels {
   noBreakEven: string;
-  unitsSuffix: string;
+  breakEvenText: string;
   percent: string;
-  operatingResult: string;
+  preTax: string;
 }
 
 type InputKey = keyof ScenarioBase;
@@ -33,10 +33,10 @@ function setup(root: HTMLElement) {
     return Number.isFinite(v) ? v : 0;
   };
 
-  function setMoney(key: string, value: number) {
+  function setMoney(key: string, value: number, flagNegative = true) {
     const el = res(key);
     el.textContent = formatUsd(value, lang);
-    el.classList.toggle('is-negative', value < 0);
+    el.classList.toggle('is-negative', flagNegative && value < 0);
   }
 
   function update() {
@@ -54,12 +54,15 @@ function setup(root: HTMLElement) {
     });
 
     setMoney('revenue', r.revenue);
-    setMoney('contribution', r.contribution);
-    setMoney('operatingResult', r.operatingResult);
-    setMoney('unitContribution', r.unitContribution);
+    setMoney('totalCosts', -r.totalCosts, false);
+    setMoney('preTaxProfit', r.preTaxProfit);
+    setMoney('netProfit', r.netProfit);
+    setMoney('netProfitPerUnit', r.netProfitPerUnit);
     const be = res('breakEven');
     be.textContent =
-      r.breakEvenUnits === null ? labels.noBreakEven : `${formatNumber(r.breakEvenUnits, lang)} ${labels.unitsSuffix}`;
+      r.breakEvenUnits === null
+        ? labels.noBreakEven
+        : labels.breakEvenText.replace('{n}', formatNumber(r.breakEvenUnits, lang));
     be.classList.toggle('is-negative', r.breakEvenUnits === null);
 
     out('priceDev').textContent = formatPct(pricePct, labels.percent);
@@ -72,7 +75,7 @@ function setup(root: HTMLElement) {
 
     window.clearTimeout(liveTimer);
     liveTimer = window.setTimeout(() => {
-      live.textContent = `${labels.operatingResult}: ${formatUsd(r.operatingResult, lang)}`;
+      live.textContent = `${labels.preTax}: ${formatUsd(r.preTaxProfit, lang)}`;
     }, 600);
   }
 

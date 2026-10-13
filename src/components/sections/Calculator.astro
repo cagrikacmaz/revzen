@@ -1,0 +1,201 @@
+---
+import SectionHead from '../SectionHead.astro';
+import type { Dict, Lang } from '../../i18n';
+import { SCENARIOS, PRESETS, compute, type PresetKey, type ScenarioKey } from '../../lib/calc';
+import { formatUsd, formatNumber, formatPct } from '../../lib/format';
+
+interface Props {
+  t: Dict;
+  lang: Lang;
+  num: string;
+}
+const { t, lang, num } = Astro.props;
+const c = t.calc;
+const base = SCENARIOS['1000'];
+const r = compute({ ...base, ...PRESETS.base });
+const presetKeys = Object.keys(PRESETS) as PresetKey[];
+const scenarioKeys: ScenarioKey[] = ['1000', '10000'];
+const scenarioLabel = { '1000': c.scenario1000, '10000': c.scenario10000 };
+
+const fields = [
+  { key: 'units', label: c.units, value: base.units, step: 1 },
+  { key: 'price', label: c.price, value: base.price, step: 1 },
+  { key: 'landed', label: c.landed, value: base.landed, step: 1 },
+  { key: 'channel', label: c.channel, value: base.channel, step: 1 },
+  { key: 'service', label: c.service, value: base.service, step: 1 },
+  { key: 'fixed', label: c.fixed, value: base.fixed, step: 1000 },
+] as const;
+
+const breakEven = (n: number | null) =>
+  n === null ? c.noBreakEven : c.breakEvenText.replace('{n}', formatNumber(n, lang));
+
+const labels = {
+  noBreakEven: c.noBreakEven,
+  breakEvenText: c.breakEvenText,
+  percent: c.percent,
+  preTax: c.preTax,
+};
+---
+
+<section class="section" id="calculator" data-section data-nav-group="profit" aria-labelledby="calculator-title">
+  <div class="wrap">
+    <SectionHead id="calculator" num={num} eyebrow={c.eyebrow} headline={c.headline} subhead={c.intro} />
+
+    <div class="calc" data-calc data-lang={lang} data-labels={JSON.stringify(labels)}>
+      <div class="calc__grid">
+        <form class="calc__form" data-calc-form novalidate aria-labelledby="calculator-title">
+          <fieldset>
+            <legend>{c.scenarioLegend}</legend>
+            <div class="segmented">
+              {
+                scenarioKeys.map((k) => (
+                  <label>
+                    <input type="radio" name="scenario" value={k} checked={k === '1000'} data-calc-scenario />
+                    <span>{scenarioLabel[k]}</span>
+                  </label>
+                ))
+              }
+            </div>
+          </fieldset>
+
+          <fieldset>
+            <legend>{c.inputsLegend}</legend>
+            <div class="calc__fields">
+              {
+                fields.map((f) => (
+                  <div class="field">
+                    <label for={`calc-${f.key}`}>{f.label}</label>
+                    <input
+                      type="number"
+                      id={`calc-${f.key}`}
+                      name={f.key}
+                      inputmode="decimal"
+                      min="0"
+                      step={f.step}
+                      value={f.value}
+                      data-calc-input={f.key}
+                    />
+                  </div>
+                ))
+              }
+            </div>
+          </fieldset>
+
+          <fieldset>
+            <legend>{c.deviationLegend}</legend>
+            <div class="slider">
+              <div class="slider__head">
+                <label for="calc-priceDev">{c.priceDev}</label>
+                <output for="calc-priceDev" data-calc-out="priceDev">{formatPct(0, c.percent)}</output>
+              </div>
+              <input type="range" id="calc-priceDev" min="-30" max="30" step="1" value="0" data-calc-dev="pricePct" />
+            </div>
+            <div class="slider">
+              <div class="slider__head">
+                <label for="calc-costDev">{c.costDev}</label>
+                <output for="calc-costDev" data-calc-out="costDev">{formatPct(0, c.percent)}</output>
+              </div>
+              <input
+                type="range"
+                id="calc-costDev"
+                min="-30"
+                max="30"
+                step="1"
+                value="0"
+                aria-describedby="calc-costDev-hint"
+                data-calc-dev="costPct"
+              />
+              <p class="slider__hint" id="calc-costDev-hint">{c.costDevHint}</p>
+            </div>
+            <div class="presets" role="group" aria-label={c.presetsLabel}>
+              {
+                presetKeys.map((k) => (
+                  <button
+                    type="button"
+                    class="chip"
+                    data-calc-preset={k}
+                    data-price={PRESETS[k].pricePct}
+                    data-cost={PRESETS[k].costPct}
+                    aria-pressed={k === 'base' ? 'true' : 'false'}
+                  >
+                    {c.presets[k]}
+                    <span class="visually-hidden">
+                      ({formatPct(PRESETS[k].pricePct, c.percent)} / {formatPct(PRESETS[k].costPct, c.percent)})
+                    </span>
+                  </button>
+                ))
+              }
+            </div>
+            <div class="table-wrap preset-table">
+              <table class="table table--cards">
+                <caption>{c.presetTableCaption}</caption>
+                <thead>
+                  <tr>
+                    <td />
+                    {presetKeys.map((k) => <th scope="col" class="num">{c.presets[k]}</th>)}
+                  </tr>
+                </thead>
+                <tbody>
+                  {
+                    scenarioKeys.map((s) => (
+                      <tr>
+                        <th scope="row">{scenarioLabel[s]}</th>
+                        {presetKeys.map((k) => {
+                          const v = compute({ ...SCENARIOS[s], ...PRESETS[k] }).preTaxProfit;
+                          return (
+                            <td class:list={['num', { 'is-negative': v < 0 }]} data-label={c.presets[k]}>
+                              {formatUsd(v, lang)}
+                            </td>
+                          );
+                        })}
+                      </tr>
+                    ))
+                  }
+                </tbody>
+              </table>
+            </div>
+          </fieldset>
+        </form>
+
+        <div class="results">
+          <h3 class="results__title">{c.resultsLabel}</h3>
+          <dl>
+            <div>
+              <dt>{c.revenue}</dt>
+              <dd data-calc-res="revenue">{formatUsd(r.revenue, lang)}</dd>
+            </div>
+            <div class="is-cost">
+              <dt>{c.totalCosts}</dt>
+              <dd data-calc-res="totalCosts">{formatUsd(-r.totalCosts, lang)}</dd>
+            </div>
+            <div class="is-key">
+              <dt>{c.preTax}</dt>
+              <dd data-calc-res="preTaxProfit">{formatUsd(r.preTaxProfit, lang)}</dd>
+            </div>
+            <div class="is-key">
+              <dt>{c.net}</dt>
+              <dd data-calc-res="netProfit">{formatUsd(r.netProfit, lang)}</dd>
+            </div>
+            <div>
+              <dt>{c.netPerUnit}</dt>
+              <dd data-calc-res="netProfitPerUnit">{formatUsd(r.netProfitPerUnit, lang)}</dd>
+            </div>
+            <div class="is-wide">
+              <dt>{c.breakEven}</dt>
+              <dd data-calc-res="breakEven">{breakEven(r.breakEvenUnits)}</dd>
+            </div>
+          </dl>
+          <p class="visually-hidden" aria-live="polite" data-calc-live></p>
+        </div>
+      </div>
+
+      <p class="calc__formula">{c.formula}</p>
+      <p class="note">{c.note}</p>
+    </div>
+  </div>
+</section>
+
+<script>
+  import { initCalculator } from '../../scripts/calculator';
+  initCalculator();
+</script>
